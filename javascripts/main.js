@@ -85,7 +85,6 @@ var app = new Vue({
 			//учим правилу
 			app.net.train([{input:fld, output:result}], {iterations: 1000000, errorThresh: 0.00001, learningRate: 0.3});
 			result = app.net.run(fld);
-			//document.getElementById('tt').textContent = JSON.stringify(result, null, 4);
 			
 			//потом игрок кликает в клетку
 			//this.clk(random);
@@ -127,69 +126,3 @@ console.log(app.net.train([
 	{input:[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0, 0.5], output:[0.25, 0.75, 0.25, 0.75, 0.00, 0.75, 0.25, 1.00, 0.25]},
 	{input:[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0], output:[0.25, 0.75, 0.25, 0.75, 0.00, 0.75, 0.25, 0.75, 1.00]}*/
 ], {iterations: 10000, errorThresh: 0.001, learningRate: 0.3}));
-
-/*app.net.fromJSON(
-
-);*/
-
-//на каждый счетчик сделать - сколько от него было проставлено, сколько привело к победе, сколько к поражению
-/*var i = [0, 0, 0, 0, 0, 0, 0, 0, 0], d = [0.5, 0.0, 1.0],
-	b = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-	c = {0:1, 1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1};*/
-								
-/*var trainingset = [], i = [0, 0, 0, 0, 0, 0, 0, 0, 0], fld, j = 0;
-for(i[0] = -1; i[0] < 9; i[0]++){
-for(i[1] = -1; i[1] < 9; i[1]++)
-for(i[2] = -1; i[2] < 9; i[2]++)
-for(i[3] = -1; i[3] < 9; i[3]++)
-for(i[4] = -1; i[4] < 9; i[4]++)
-for(i[5] = -1; i[5] < 9; i[5]++)
-for(i[6] = -1; i[6] < 9; i[6]++)
-for(i[7] = -1; i[7] < 9; i[7]++)
-for(i[8] = -1; i[8] < 9; i[8]++){
-fld = {};
-fld[i[0]] = (fld[i[0]]>>>0) + 1;
-fld[i[1]] = (fld[i[1]]>>>0) + 1;
-fld[i[2]] = (fld[i[2]]>>>0) + 1;
-fld[i[3]] = (fld[i[3]]>>>0) + 1;
-fld[i[4]] = (fld[i[4]]>>>0) + 1;
-fld[i[5]] = (fld[i[5]]>>>0) + 1;
-fld[i[6]] = (fld[i[6]]>>>0) + 1;
-fld[i[7]] = (fld[i[7]]>>>0) + 1;
-fld[i[8]] = (fld[i[8]]>>>0) + 1;
-//и все они не равны -1
-if(fld[i[0]] != 1 || fld[i[1]] != 1 || fld[i[2]] != 1 || fld[i[3]] != 1 || fld[i[4]] != 1 || fld[i[5]] != 1 || fld[i[6]] != 1 || fld[i[7]] != 1 || fld[i[8]] != 1) continue;
-
-//каждый следующий ход не может быть -1, если хотя бы из предыдущих равен -1
-//потом проверить цепочку, ставя ходы по очереди, проверять, не конец ли игры
-//если конец игры, то в предыдущем ходе поставить +1 исход, и если победа крестиков, то +1
-fld = i.reduce(function(arr, t, j){ arr[t] = 1 + (j&1); return arr; }, [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]);
-if(fld[4] != 0 && fld[3] == fld[4] && fld[4] == fld[5]
-|| fld[4] != 0 && fld[1] == fld[4] && fld[4] == fld[7]
-|| fld[4] != 0 && fld[0] == fld[4] && fld[4] == fld[8]
-|| fld[4] != 0 && fld[2] == fld[4] && fld[4] == fld[6]){
-trainingset.push({
-	input:[i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]],
-	output: (fld[4] == 1 ? {win: 1, lose: 0} : {win: 0, lose: 1})
-}); j++; }
-
-else if(fld[0] != 0 && fld[0] == fld[1] && fld[1] == fld[2]
-|| fld[0] != 0 && fld[0] == fld[3] && fld[3] == fld[6]){
-trainingset.push({
-	input:[i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]],
-	output: (fld[0] == 1 ? {win: 1, lose: 0} : {win: 0, lose: 1})
-}); j++; }
-
-else if(fld[8] != 0 && fld[8] == fld[7] && fld[6] == fld[7]
-|| fld[8] != 0 && fld[8] == fld[5] && fld[2] == fld[5]){
-trainingset.push({
-	input:[i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]],
-	output: (fld[8] == 1 ? {win: 1, lose: 0} : {win: 0, lose: 1})
-}); j++; }
-}
-alert(i[0]);
-}
-alert(j);
-var str = '';
-for(var i = 0; i < j; i++) str += ('{input:[' + trainingset[i].input[0]+','+trainingset[i].input[1]+','+trainingset[i].input[2]+','+trainingset[i].input[3]+','+trainingset[i].input[4]+','+trainingset[i].input[5]+','+trainingset[i].input[6]+','+trainingset[i].input[7]+','+trainingset[i].input[8]+'],output:{win:'+trainingset[i].output.win+',lose:'+trainingset[i].output.lose+'}},');
-document.getElementById('tt').textContent = str;*/
