@@ -13,7 +13,13 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <style type="text/css">
-      td {
+      #maintable {
+        border:1px solid #f5f5f5; table-layout:fixed;
+        width: 300px;
+        height: 300px;
+      }
+      
+      #maintable td {
         width: 100px;
         height: 100px;
         text-align: center;
@@ -50,23 +56,25 @@
           <div id="app">
             <div>Ход: <span v-text="turn"></span>, игрок: <span v-text="player|✖⚪"></span> <button type="button" @click="clear()">Заново</button> <button type="button" @click="calc()">Рассчитать</button></div>
             <div>Список ходов: <span v-for="i in turn" v-text="fld[turns[i]]|✖⚪"></span></div>
-            <table width="300" height="300" cols="3" rows="3" cellspacing="0" border="1" style="border:1px solid #f5f5f5; table-layout:fixed;">
-              <tr>
-                <td v-text="fld[0]|✖⚪" @click="clk(0)"></td>
-                <td v-text="fld[1]|✖⚪" @click="clk(1)"></td>
-                <td v-text="fld[2]|✖⚪" @click="clk(2)"></td>
-              </tr>
-              <tr>
-                <td v-text="fld[3]|✖⚪" @click="clk(3)"></td>
-                <td v-text="fld[4]|✖⚪" @click="clk(4)"></td>
-                <td v-text="fld[5]|✖⚪" @click="clk(5)"></td>
-              </tr>
-              <tr>
-                <td v-text="fld[6]|✖⚪" @click="clk(6)"></td>
-                <td v-text="fld[7]|✖⚪" @click="clk(7)"></td>
-                <td v-text="fld[8]|✖⚪" @click="clk(8)"></td>
-              </tr>
-            </table>
+            <div style="text-align:center;">
+              <table id="maintable" width="300" height="300" cols="3" rows="3" cellspacing="0" border="1">
+                <tr>
+                  <td v-text="fld[0]|✖⚪" @click="clk(0)"></td>
+                  <td v-text="fld[1]|✖⚪" @click="clk(1)"></td>
+                  <td v-text="fld[2]|✖⚪" @click="clk(2)"></td>
+                </tr>
+                <tr>
+                  <td v-text="fld[3]|✖⚪" @click="clk(3)"></td>
+                  <td v-text="fld[4]|✖⚪" @click="clk(4)"></td>
+                  <td v-text="fld[5]|✖⚪" @click="clk(5)"></td>
+                </tr>
+                <tr>
+                  <td v-text="fld[6]|✖⚪" @click="clk(6)"></td>
+                  <td v-text="fld[7]|✖⚪" @click="clk(7)"></td>
+                  <td v-text="fld[8]|✖⚪" @click="clk(8)"></td>
+                </tr>
+              </table>
+            </div>
           </div>
         <pre id="tt"></pre>
         <script type="text/javascript" src="javascripts/main.js"></script>
