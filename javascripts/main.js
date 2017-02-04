@@ -1,5 +1,4 @@
 "use strict";
-Vue.filter('✖⚪', function(n){ return (n == 0.0 ? '✖' : (n == 1.0 ? '⚪' : ''))});
 
 var app = new Vue({
 	el: '#app',
@@ -15,7 +14,7 @@ var app = new Vue({
 			arr[t] = +(i&1); return arr;
 		}, [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]); },
 		turn: function(){ return this.turns.reduce(function(pv, cv, i){ return i; }, 0); },
-		player: function(){ return this.turns.reduce(function(pv, cv, i){ return +(i&1); }, 0.0); },
+		player: function(){ return this.turns.reduce(function(pv, cv, i){ return +(~i&1); }, 0.0); },
 		gameover: function(){
 			var fld = this.fld;
 			
@@ -36,9 +35,10 @@ var app = new Vue({
 			if(this.turn >= 8) return {win: 0, lose: 0}; else return false;
 		}
 	}, methods: {
+		out: function(n){ return (n == 0.0 ? '✖' : (n == 1.0 ? '⚪' : ''))},
 		clear: function(){ this.turns.splice(0, 9); for(var i = 0; i < 9; i++) this.clr(i, null); },
 		clr: function(n, value){
-			if(!!value || value === 0 && this.player == 1.0) value == 1.0 - value;
+			if((!!value || value === 0) && this.player == 1.0) value == 1.0 - value;
 			document.querySelector('#app table tr:nth-child(' + ((n/3+1)>>0) + ') td:nth-child(' + ((n%3+1)>>0) + ')').style.background
 				= (!value && value !== 0 ? 'inherit' : 'linear-gradient(to right, #dcedc8 '+((value*1000-1000)>>0)+'%,#ffccbc '+((1000*value)>>0)+'%)');
 		},
@@ -53,15 +53,15 @@ var app = new Vue({
 					output:[la[8],  la[7],  la[6],  la[5],  la[4],  la[3],  la[2],  la[1],  la[0]]},
 					{input:[fld[2], fld[5], fld[8], fld[1], fld[4], fld[7], fld[0], fld[3], fld[6]],
 					output:[la[2],  la[5],  la[8],  la[1],  la[4],  la[7],  la[0],  la[3],  la[6]]}
-				], {iterations: 1E5, errorThresh: 1E-3, learningRate: 0.3});
+				], {iterations: 1E5, errorThresh: 5E-3, learningRate: 0.3});
 				
 			} else {
 				this.learning = true;
 				result = this.net.run(fld);
 				
 				for(var i = 0; i < 9; i++){
-					if(fld[i] == 0.0) result[i] = 0.00;
-					else if(fld[i] == 1.0) result[i] = 1.00;
+					if(fld[i] == 0.0) result[i] = 0.50;
+					else if(fld[i] == 1.0) result[i] = 0.50;
 					else if(result[i] > 0.875) result[i] = 1.00;
 					else if(result[i] > 0.625 && result[i] <= 0.875) result[i] = 0.75;
 					else if(result[i] > 0.375 && result[i] <= 0.625) result[i] = 0.50;
@@ -91,26 +91,34 @@ var app = new Vue({
 				this.clr(i, result[i]);
 				
 				if(fld[i] == 0.0) result[i] = 0.00;
-				else if(fld[i] == 1.0) result[i] = 1.00;
+				else if(fld[i] == 1.0) result[i] = 0.00;
 			}
 			
 			//вычисляем сумму, а затем вес каждой клетки результата по отношению к 255
-			sum = result.reduce(function(sum, cv, i){ return sum + (fld[i] == 0.5 ? (player == 0.0 ? cv : 1.0 - cv) : 0.0); }, 0.0);
+			//sum = result.reduce(function(sum, cv, i){ cv = (fld[i] == 0.5 ? cv : 0.0); return sum + cv; }, 0.0);
+			
+			var obj = this.turns.reduce(function(obj, i){ return obj[i]; }, obj2), sum = 0;
+			result = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+			for(var i = 0; i < 9; i++) if(obj[i] != 0 && fld[i] == 0.5) { result[i] = (obj[i] != 0 ? obj[i][player == 0.0 ? 9 : 10] / obj[i][11] : 0); sum = sum + result[i]; }
+			for(var i = 0; i < 9; i++) { this.clr(i, result[i] / sum); this.learning_arr[i] = result[i] / sum; }
 			sum = 255 / sum;
 			//накапливаем сумму произведений веса на вероятность в клетке, назначаем накопленное в клетку результата
-			result.reduce(function(acc, cv, i, arr){ cv = (fld[i] == 0.5 ? (player == 0.0 ? cv : 1.0 - cv) : 0.0); acc += sum * cv; arr[i] = (!!cv ? acc&255 : 0); return acc; }, 0);
+			//result.reduce(function(acc, cv, i, arr){ cv = (fld[i] == 0.5 ? cv : 0.0); acc += sum * cv; arr[i] = (!!cv ? acc&255 : 0); return acc; }, 0);
+			result = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+			result.reduce(function(acc, cv, i, arr){ cv = (obj[i] != 0 && fld[i] == 0.5 ? obj[i][player == 0.0 ? 9 : 10] / obj[i][11] : 0); acc += cv * sum; arr[i] = (!!cv ? acc&255 : 0); return acc; }, 0);
 			
 			//генерируем случайное число от 0 до 255
 			random = new Uint8Array(1); crypto.getRandomValues(random); random = random[0];
-			this.rand_arr = random + ' in ' + JSON.stringify(result);
+			//this.rand_arr = random + ' in ' + JSON.stringify(result);
 			
 			//находим первую клетку результата, которое будет не меньше случайного числа
 			random = result.reduce(function(pv, cv, i){ if(pv == -1 && random < cv && fld[i] == 0.5) return i; else return pv; }, -1);
 			if(random < 0 || random > 8) random = 4;
 			
 			//потом игрок кликает в клетку
-			this.rand_arr = this.rand_arr + ', выпало ' + random;
+			//this.rand_arr = this.rand_arr + ', выпало ' + random;
 			//this.clk(random);
+			this.rand_arr = obj[9] + ' хода ✖ победные, '+ obj[10] + ' хода ⚪ победные, всего ' + obj[11] + ' ходов';
 		},
 		clk: function(num){
 			var gameover, fld, player, la;
@@ -140,5 +148,5 @@ var app = new Vue({
 });
 
 console.log(app.net.train([
-	{input:[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], output:[0.75, 0.25, 0.75, 0.25, 1.00, 0.25, 0.75, 0.25, 0.75]}
-], {iterations: 1E5, errorThresh: 1E-3, learningRate: 0.3}));
+	{input:[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], output:[1, 0, 1, 0, 1, 0, 1, 0, 1]}
+], {iterations: 1E5, errorThresh: 5E-3, learningRate: 0.3}));

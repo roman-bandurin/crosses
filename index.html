@@ -26,11 +26,11 @@
         <section id="main_content">
           <div id="app">
             <div>
-              <p class="inline">Ход: <span v-text="turn"></span>, игрок: <span v-text="player|✖⚪"></span></p>
+              <p class="inline">Ход: <span v-text="turn"></span>, игрок: <span v-text="out(player)"></span></p>
               <span class="inline" style="width:70px;"></span>
               <button type="button" @click="clear()">Заново</button>
             </div>
-            <div><p>Список ходов: <span v-for="i in turns" v-text="fld[i]|✖⚪"></span></p></div>
+            <div><p>Список ходов: <span v-for="i in turns" v-text="out(fld[i])"></span></p></div>
             <div>
               <button type="button" @click="calc()">Рассчитать</button>
               <span class="inline" style="width:22px;"></span>
@@ -39,19 +39,19 @@
             <div><p v-text="rand_arr" style="font-size:75%; white-space:pre; margin-top:5px;"></p></div>
             <table id="maintable" cols="3" rows="3">
               <tr>
-                <td v-text="fld[0]|✖⚪" @click="clk(0)"></td>
-                <td v-text="fld[1]|✖⚪" @click="clk(1)"></td>
-                <td v-text="fld[2]|✖⚪" @click="clk(2)"></td>
+                <td v-text="out(fld[0])" @click="clk(0)"></td>
+                <td v-text="out(fld[1])" @click="clk(1)"></td>
+                <td v-text="out(fld[2])" @click="clk(2)"></td>
               </tr>
               <tr>
-                <td v-text="fld[3]|✖⚪" @click="clk(3)"></td>
-                <td v-text="fld[4]|✖⚪" @click="clk(4)"></td>
-                <td v-text="fld[5]|✖⚪" @click="clk(5)"></td>
+                <td v-text="out(fld[3])" @click="clk(3)"></td>
+                <td v-text="out(fld[4])" @click="clk(4)"></td>
+                <td v-text="out(fld[5])" @click="clk(5)"></td>
               </tr>
               <tr>
-                <td v-text="fld[6]|✖⚪" @click="clk(6)"></td>
-                <td v-text="fld[7]|✖⚪" @click="clk(7)"></td>
-                <td v-text="fld[8]|✖⚪" @click="clk(8)"></td>
+                <td v-text="out(fld[6])" @click="clk(6)"></td>
+                <td v-text="out(fld[7])" @click="clk(7)"></td>
+                <td v-text="out(fld[8])" @click="clk(8)"></td>
               </tr>
             </table>
           </div>
